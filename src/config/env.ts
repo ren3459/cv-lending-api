@@ -3,6 +3,22 @@ import { z } from "zod";
 
 dotenv.config();
 
+const optionalEnvString = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  z.string().optional(),
+);
+const optionalEnvEmail = z.preprocess(
+  (value) => (value === "" ? undefined : value),
+  z.email().optional(),
+);
+const envBoolean = z.preprocess((value) => {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  return value.toLowerCase() === "true";
+}, z.boolean());
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
@@ -15,14 +31,14 @@ const envSchema = z.object({
     .positive()
     .default(15 * 60 * 1000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
-  SMTP_HOST: z.string().optional(),
+  SMTP_HOST: optionalEnvString,
   SMTP_PORT: z.coerce.number().int().positive().default(587),
-  SMTP_SECURE: z.coerce.boolean().default(false),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASS: z.string().optional(),
-  MAIL_FROM: z.email().optional(),
-  MAIL_TO: z.email().optional(),
-  DEEPSEEK_API_KEY: z.string().optional(),
+  SMTP_SECURE: envBoolean.default(false),
+  SMTP_USER: optionalEnvString,
+  SMTP_PASS: optionalEnvString,
+  MAIL_FROM: optionalEnvEmail,
+  MAIL_TO: optionalEnvEmail,
+  DEEPSEEK_API_KEY: optionalEnvString,
   DEEPSEEK_MODEL: z.string().default("deepseek-chat"),
 });
 
