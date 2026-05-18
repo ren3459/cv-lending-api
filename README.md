@@ -1,21 +1,21 @@
 # cv-lending-api
 
-Express API for accepting contact requests and sending email via SMTP.
+Express API для приёма контактных запросов и отправки email через SMTP.
 
-## Scripts
+## Скрипты
 
-```bash
+``` bash
 npm run dev
 npm run build
 npm start
 npm test
 ```
 
-## Environment
+## Переменные окружения
 
-Create `.env` from `.env.example`.
+Создайте файл `.env` на основе `.env.example`.
 
-```bash
+``` bash
 NODE_ENV=development
 PORT=4000
 CORS_ORIGIN=http://localhost:5173
@@ -34,37 +34,43 @@ DEEPSEEK_API_KEY=sk-your-deepseek-key
 DEEPSEEK_MODEL=deepseek-chat
 ```
 
-## Endpoints
+## Эндпоинты
 
 `GET /health`
 
-Returns API status.
+Возвращает статус API.
 
 `POST /api/contact`
 
-Accepts the contact form used by the frontend:
+Принимает данные контактной формы, используемой фронтендом:
 
-```json
+``` json
 {
   "name": "Jane Doe",
   "phone": "+1 555 0100",
   "email": "jane@example.com",
-  "comment": "I want to discuss a frontend project."
+  "comment": "Я хочу обсудить проект по фронтенду."
 }
 ```
 
-If SMTP variables are configured, the request is sent to `MAIL_TO`, and a copy is sent to the sender email.
-If SMTP is not configured, the request is validated and accepted in demo mode.
+Если SMTP-переменные настроены, запрос отправляется на `MAIL_TO`, а
+копия письма отправляется на email отправителя.
+
+Если SMTP не настроен, запрос проходит валидацию и принимается в
+демонстрационном режиме.
 
 `POST /api/ai-summary`
 
-Accepts a prompt for the planned AI helper:
+Принимает запрос (prompt) для планируемого AI-помощника:
 
-```json
+``` json
 {
-  "prompt": "React landing with a feedback form and email delivery"
+  "prompt": "React-лендинг с формой обратной связи и отправкой email"
 }
 ```
 
-If `DEEPSEEK_API_KEY` is configured, the API calls DeepSeek Chat Completions API.
-Without a key, it returns a local fallback summary.
+Если настроен `DEEPSEEK_API_KEY`, API выполняет запрос к DeepSeek Chat
+Completions API.
+
+Если ключ отсутствует, возвращается локальное резервное (fallback)
+описание.
