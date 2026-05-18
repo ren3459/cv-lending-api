@@ -46,9 +46,9 @@ DEEPSEEK_MODEL=deepseek-chat
 
 ``` json
 {
-  "name": "Jane Doe",
-  "phone": "+1 555 0100",
-  "email": "jane@example.com",
+  "name": "Иванов Иван",
+  "phone": "+788 800 555 3535",
+  "email": "ivan@example.com",
   "comment": "Я хочу обсудить проект по фронтенду."
 }
 ```
