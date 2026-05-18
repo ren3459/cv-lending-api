@@ -7,11 +7,49 @@ import { aiRouter, contactRouter } from './routes/cv.routes';
 
 export const app = express();
 
+function isOriginAllowed(origin: string): boolean {
+  const normalizedOrigin = origin.replace(/\/$/, '');
+  const { hostname } = new URL(normalizedOrigin);
+
+  if (hostname === 'vercel.app' || hostname.endsWith('.vercel.app')) {
+    return true;
+  }
+
+  return env.CORS_ORIGINS.some((allowedOrigin) => {
+    const normalizedAllowedOrigin = allowedOrigin.replace(/\/$/, '');
+
+    if (normalizedAllowedOrigin === '*') {
+      return true;
+    }
+
+    if (normalizedAllowedOrigin.includes('*')) {
+      const pattern = `^${normalizedAllowedOrigin
+        .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+        .replace(/\\\*/g, '.*')}$`;
+
+      return new RegExp(pattern).test(normalizedOrigin);
+    }
+
+    return normalizedAllowedOrigin === normalizedOrigin;
+  });
+}
+
+const corsMiddleware = cors({
+  origin(origin, callback) {
+    if (!origin || isOriginAllowed(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(null, false);
+  },
+  optionsSuccessStatus: 204
+});
+
 app.use(
-  cors({
-    origin: env.CORS_ORIGINS.includes('*') ? true : env.CORS_ORIGINS
-  })
+  corsMiddleware
 );
+app.options(/(.*)/, corsMiddleware);
 
 app.use(express.json({ limit: '1mb' }));
 
