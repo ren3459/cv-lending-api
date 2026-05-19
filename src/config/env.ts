@@ -40,7 +40,9 @@ const envSchema = z.object({
   MAIL_TO: optionalEnvEmail,
   AI_API_KEY: optionalEnvString,
   AI_MODEL: z.string().default("deepseek-chat"),
-  AI_PROVIDER: z.string(),
+  AI_PROVIDER: z
+    .string()
+    .default("https://openrouter.ai/api/v1/chat/completions"),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

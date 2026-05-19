@@ -1,4 +1,3 @@
-import cors from 'cors';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { ZodError } from 'zod';
@@ -9,7 +8,13 @@ export const app = express();
 
 function isOriginAllowed(origin: string): boolean {
   const normalizedOrigin = origin.replace(/\/$/, '');
-  const { hostname } = new URL(normalizedOrigin);
+  let hostname = '';
+
+  try {
+    hostname = new URL(normalizedOrigin).hostname;
+  } catch {
+    return false;
+  }
 
   if (hostname === 'vercel.app' || hostname.endsWith('.vercel.app')) {
     return true;
@@ -34,22 +39,29 @@ function isOriginAllowed(origin: string): boolean {
   });
 }
 
-const corsMiddleware = cors({
-  origin(origin, callback) {
-    if (!origin || isOriginAllowed(origin)) {
-      callback(null, true);
-      return;
-    }
+app.use((req, res, next) => {
+  const origin = req.header('origin');
 
-    callback(null, false);
-  },
-  optionsSuccessStatus: 204
+  if (origin && isOriginAllowed(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  } else if (!origin && env.CORS_ORIGINS.includes('*')) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    req.header('access-control-request-headers') || 'Content-Type, Authorization'
+  );
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return;
+  }
+
+  next();
 });
-
-app.use(
-  corsMiddleware
-);
-app.options(/(.*)/, corsMiddleware);
 
 app.use(express.json({ limit: '1mb' }));
 

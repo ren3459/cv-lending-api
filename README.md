@@ -32,6 +32,7 @@ MAIL_TO=hr@example.com
 
 AI_API_KEY=sk-your-deepseek-key
 AI_MODEL=deepseek-chat
+AI_PROVIDER=ai-provider-url
 ```
 
 ## Эндпоинты

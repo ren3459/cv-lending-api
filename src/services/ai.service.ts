@@ -26,9 +26,6 @@ export async function generateSummary(prompt: string): Promise<string> {
       ],
     }),
   });
-  console.log(response);
-  console.log(env.AI_PROVIDER);
-  console.log(env.AI_MODEL);
 
   if (!response.ok) {
     throw new Error("Ai API returned an error. Check the API key and model.");
