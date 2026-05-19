@@ -38,8 +38,9 @@ const envSchema = z.object({
   SMTP_PASS: optionalEnvString,
   MAIL_FROM: optionalEnvEmail,
   MAIL_TO: optionalEnvEmail,
-  DEEPSEEK_API_KEY: optionalEnvString,
-  DEEPSEEK_MODEL: z.string().default("deepseek-chat"),
+  AI_API_KEY: optionalEnvString,
+  AI_MODEL: z.string().default("deepseek-chat"),
+  AI_PROVIDER: z.string(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

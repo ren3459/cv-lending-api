@@ -1,21 +1,21 @@
 import { env } from "../config/env";
 
 export async function generateSummary(prompt: string): Promise<string> {
-  if (!env.DEEPSEEK_API_KEY) {
+  if (!env.AI_API_KEY) {
     return fallbackSummary(prompt);
   }
 
-  const response = await fetch("https://api.deepseek.com/chat/completions", {
+  const response = await fetch(env.AI_PROVIDER, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${env.DEEPSEEK_API_KEY}`,
+      Authorization: `Bearer ${env.AI_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: env.DEEPSEEK_MODEL,
+      model: env.AI_MODEL,
       messages: [
         {
-          role: "system",
+          role: "user",
           content:
             "Ты frontend lead. Сформулируй короткое резюме проекта на русском в одном абзаце, без списков.",
         },
@@ -26,9 +26,12 @@ export async function generateSummary(prompt: string): Promise<string> {
       ],
     }),
   });
+  console.log(response);
+  console.log(env.AI_PROVIDER);
+  console.log(env.AI_MODEL);
 
   if (!response.ok) {
-    throw new Error("DeepSeek API returned an error. Check the API key and model.");
+    throw new Error("Ai API returned an error. Check the API key and model.");
   }
 
   const data: unknown = await response.json();
@@ -36,7 +39,8 @@ export async function generateSummary(prompt: string): Promise<string> {
 }
 
 function fallbackSummary(prompt: string): string {
-  const normalized = prompt || "Проект с frontend, API и пользовательским сценарием";
+  const normalized =
+    prompt || "Проект с frontend, API и пользовательским сценарием";
 
   return `AI fallback: ${normalized}. Короткое резюме: собрать понятный интерфейс, описать API-контракт, обработать загрузку, успех и ошибки, затем вручную проверить сценарий пользователя.`;
 }
